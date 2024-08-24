@@ -5,8 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="keywords" content="Hexo Theme Redefine">
     
-        <meta name="description" content="Hexo Theme Redefine">
-    
     <meta name="author" content="Navio">
     <!-- preconnect -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -19,6 +17,20 @@
     <meta name="robots" content="index,follow">
     <meta name="googlebot" content="index,follow">
     <meta name="revisit-after" content="1 days">
+    
+        <meta name="description" content="争对2024电子设计竞赛国赛基于ZYNQ搭建的ADDA硬件平台&ensp;&ensp;电赛结束也快一个月的时间了，很早之前就有过自己搭建一个硬件测试平台的想法，但一直由于时间和技术问题没有得以实施。在用余佬（TQ-V85Sn）的板子打完省赛后，我想着自己也该花点时间研究一下各个芯片的细节和可拓展性，最终这篇博客应运而生（当然后面还要无限次修改）。其实这早就不该是自己的第一篇博客，但因为本人懒散一拖">
+<meta property="og:type" content="article">
+<meta property="og:title" content="A platform based on ZYNQ for ADDA system">
+<meta property="og:url" content="http://example.com/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-system/index.html">
+<meta property="og:site_name" content="Hexo">
+<meta property="og:description" content="争对2024电子设计竞赛国赛基于ZYNQ搭建的ADDA硬件平台&ensp;&ensp;电赛结束也快一个月的时间了，很早之前就有过自己搭建一个硬件测试平台的想法，但一直由于时间和技术问题没有得以实施。在用余佬（TQ-V85Sn）的板子打完省赛后，我想着自己也该花点时间研究一下各个芯片的细节和可拓展性，最终这篇博客应运而生（当然后面还要无限次修改）。其实这早就不该是自己的第一篇博客，但因为本人懒散一拖">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="d:/myblog/source/blog1image/1.png">
+<meta property="article:published_time" content="2024-08-24T01:49:05.000Z">
+<meta property="article:modified_time" content="2024-08-24T02:47:55.221Z">
+<meta property="article:author" content="Navio">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="d:/myblog/source/blog1image/1.png">
     
     
     <!--- Icon Part-->
@@ -72,7 +84,7 @@
 
     <script id="hexo-configurations">
     window.config = {"hostname":"example.com","root":"/","language":"en"};
-    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"dark"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":false,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"Welcome to my blogs","subtitle":{"text":["可惜生活不是电影，我也少一点运气。"],"hitokoto":{"enable":"enable","api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":"2546548261@qq.com"},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.4","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/8/17 11:45:14"};
+    window.theme = {"articles":{"style":{"font_size":"16px","line_height":1.5,"image_border_radius":"14px","image_alignment":"center","image_caption":false,"link_icon":true,"title_alignment":"left","headings_top_spacing":{"h1":"3.2rem","h2":"2.4rem","h3":"1.9rem","h4":"1.6rem","h5":"1.4rem","h6":"1.3rem"}},"word_count":{"enable":true,"count":true,"min2read":true},"author_label":{"enable":true,"auto":false,"list":[]},"code_block":{"copy":true,"style":"mac","font":{"enable":false,"family":null,"url":null}},"toc":{"enable":true,"max_depth":3,"number":false,"expand":true,"init_open":true},"copyright":{"enable":true,"default":"cc_by_nc_sa"},"lazyload":true,"recommendation":{"enable":false,"title":"推荐阅读","limit":3,"mobile_limit":2,"placeholder":"/images/wallhaven-wqery6-light.webp","skip_dirs":[]}},"colors":{"primary":"#A31F34","secondary":null,"default_mode":"dark"},"global":{"fonts":{"chinese":{"enable":false,"family":null,"url":null},"english":{"enable":false,"family":null,"url":null}},"content_max_width":"1000px","sidebar_width":"210px","hover":{"shadow":true,"scale":false},"scroll_progress":{"bar":false,"percentage":true},"website_counter":{"url":"https://cn.vercount.one/js","enable":true,"site_pv":true,"site_uv":true,"post_pv":true},"single_page":true,"preloader":true,"open_graph":true,"google_analytics":{"enable":false,"id":null}},"home_banner":{"enable":true,"style":"fixed","image":{"light":"/images/wallhaven-wqery6-light.webp","dark":"/images/wallhaven-wqery6-dark.webp"},"title":"Welcome to my blogs","subtitle":{"text":["可惜生活不是电影，我也少一点运气。"],"hitokoto":{"enable":"enable","api":"https://v1.hitokoto.cn"},"typing_speed":100,"backing_speed":80,"starting_delay":500,"backing_delay":1500,"loop":true,"smart_backspace":true},"text_color":{"light":"#fff","dark":"#d1d1b6"},"text_style":{"title_size":"2.8rem","subtitle_size":"1.5rem","line_height":1.2},"custom_font":{"enable":false,"family":null,"url":null},"social_links":{"enable":false,"style":"default","links":{"github":null,"instagram":null,"zhihu":null,"twitter":null,"email":"2546548261@qq.com"},"qrs":{"weixin":null}}},"plugins":{"feed":{"enable":false},"aplayer":{"enable":false,"type":"fixed","audios":[{"name":null,"artist":null,"url":null,"cover":null,"lrc":null}]},"mermaid":{"enable":false,"version":"9.3.0"}},"version":"2.6.4","navbar":{"auto_hide":false,"color":{"left":"#f78736","right":"#367df7","transparency":35},"width":{"home":"1200px","pages":"1000px"},"links":{"Home":{"path":"/","icon":"fa-regular fa-house"}},"search":{"enable":false,"preload":true}},"page_templates":{"friends_column":2,"tags_style":"blur"},"home":{"sidebar":{"enable":true,"position":"left","first_item":"menu","announcement":null,"show_on_mobile":true,"links":null},"article_date_format":"auto","categories":{"enable":true,"limit":3},"tags":{"enable":true,"limit":3}},"footerStart":"2022/8/17 11:45:14"};
     window.lang_ago = {"second":"%s seconds ago","minute":"%s minutes ago","hour":"%s hours ago","day":"%s days ago","week":"%s weeks ago","month":"%s months ago","year":"%s years ago"};
     window.data = {"masonry":false};
   </script>
@@ -404,8 +416,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-08-24 10:25:01</span>
-            <span class="mobile">2024-08-24 10:25:01</span>
+            <span class="desktop">2024-08-24 10:47:55</span>
+            <span class="mobile">2024-08-24 10:47:55</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -433,7 +445,12 @@
 
         <div class="article-content markdown-body px-2 sm:px-6 md:px-8 pb-8">
             <h3 id="争对2024电子设计竞赛国赛基于ZYNQ搭建的ADDA硬件平台"><a href="#争对2024电子设计竞赛国赛基于ZYNQ搭建的ADDA硬件平台" class="headerlink" title="争对2024电子设计竞赛国赛基于ZYNQ搭建的ADDA硬件平台"></a><strong>争对2024电子设计竞赛国赛基于ZYNQ搭建的ADDA硬件平台</strong></h3><p>&ensp;&ensp;电赛结束也快一个月的时间了，很早之前就有过自己搭建一个硬件测试平台的想法，但一直由于时间和技术问题没有得以实施。在用余佬（<em>TQ-V85Sn</em>）的板子打完省赛后，我想着自己也该花点时间研究一下各个芯片的细节和可拓展性，最终这篇博客应运而生<strong>（当然后面还要无限次修改）</strong>。其实这早就不该是自己的第一篇博客，但因为本人懒散一拖再拖先前很多项目都只能躺在硬盘的某个分区慢慢吃灰了，既然决定开始记录那就从这个项目开始吧，有句话怎么说来着，“凡是过往，皆为序章”吧！</p>
-<h4 id="芯片选型"><a href="#芯片选型" class="headerlink" title="芯片选型"></a><strong>芯片选型</strong></h4><p>&ensp;&ensp;<strong>主控芯片</strong>：怎么说，好歹也是最后一次打国赛了，当然要选XC7Z020-2CLG400l。选的是野火的核心板（转了半天发现最便宜的020核心板就是这一块）。<br>&ensp;&ensp;<strong>ADC芯片</strong>：之前一直用的AD9269，80M采样率的上限，16比特的采样精度，CMOS输出其实已经由于大部分市场上已有的ADC模块选用的芯片，但毕竟是自己重新制作嘛，还是挑战一下更高采样率的ADC，以及稍有不同的高速协议LVDS</p>
+<h4 id="芯片选型"><a href="#芯片选型" class="headerlink" title="芯片选型"></a><strong>芯片选型</strong></h4><p>&ensp;&ensp;<strong>主控芯片</strong>：怎么说，好歹也是最后一次打国赛了，当然要选XC7Z020-2CLG400l。选的是野火的核心板（转了半天发现最便宜的020核心板就是这一块）。<br>&ensp;&ensp;<strong>ADC芯片</strong>：之前一直用的AD9269，80M采样率的上限，16比特的采样精度，CMOS输出其实已经由于大部分市场上已有的ADC模块选用的芯片，但毕竟是自己重新制作嘛，还是挑战一下更高采样率的ADC，以及稍有不同的高速协议LVDS，最终经过挑选和DAC精度匹配采样率高达250Msps的AD9643（虽然电赛DA挑战了时序最高只能跑到200M，但250M值得挑战）14比特采样精度。<br>&ensp;&ensp;<strong>DAC芯片</strong>：貌似采样率300M以上就奔着G去了，美信的芯片咱也用不起，当然初体验以及性价比最高的还得是AD9744，但是系统既然换就要换全套，经过一系列价格性能的筛选AD9746刚好和AD的采样率很好的匹配上。<br>&ensp;&ensp;<strong>PLL芯片</strong>：之前用的Si5351采用I2C通信接口，基本上可以实现150M以下频率全覆盖，200M频率便是极限，最不能接受的性能是<br><img  
+                     lazyload
+                     src="/images/loading.svg"
+                     data-src="D:/myblog/source/blog1image/1.png"
+                      alt="Si5351-B的输出极限" title="Magic Gardens"
+                ></p>
 
         </div>
 
@@ -448,7 +465,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-08-24 10:25:01
+                    :</strong> 2024-08-24 10:47:55
             </li>
         
         <li>
