@@ -404,8 +404,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-08-24 20:13:22</span>
-            <span class="mobile">2024-08-24 20:13:22</span>
+            <span class="desktop">2024-08-24 22:19</span>
+            <span class="mobile">2024-08-24 22:19</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -443,9 +443,9 @@
 <p>JTAG always implies a non-secure environment.</p>
 </blockquote>
 <ol>
-<li><p>系统上电启动执行<br> &ensp;&ensp;系统上电后，复位引脚 <em><strong>PS_POR_B</strong></em>（该引脚连接在BANK500上）被置位，此刻 ZYNQ 硬件立马去采样一组称作 <em><strong>Boot Strap Pins</strong></em> 的管脚，这组管脚告诉硬件以什么方式启动(QSPI Flash、NAND Flash、NOR Flash、SD Card)，以及是否开启PLL等，如果 Boot Mode 不是 JTAG，则 BootROM 配置所选择的 boot device 控制器。<br> &ensp;&ensp;PS 端首先执行 BootROM 上的启动代码，这段代码是直接在 On Chip ROM（OCM）中 XILINX 烧刻进去，无法看到而且也无法修改，所以 BootROM 是上电后，APU 执行的第一段代码就是 BootROM 的这部分， ZYNQ-7000 是双核 Cortex-A9，两个 CPU 核心，BootROM 由 CPU_0 来执行，此刻 CPU_1 处于 WFE 等待状态。BootROM 的主要任务是配置系统，BootROM读取存储器中的程序代码，并将FSBL拷贝到OCM（On-chip memory）里 ， 这个被拷贝到片上 RAM 执行的程序就来自于我们要制作的文件———<strong> BOOT.bin </strong>(如下图)。或者，可以在 <em>non-secure Boot Mode</em> 中直接从 Quad-SPI 或 NOR 设备执行 FSBL&#x2F;User Code，即片上运行代码。<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/2.png" alt="编译产生的镜像文件和引导文件" title="编译产生的镜像文件和引导文件"><img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/7.png" alt="编译产生的镜像文件和引导文件" title="编译产生的镜像文件和引导文件"><br> <strong>🐖</strong>：由于BootROM可以从QSPI&#x2F;NAND&#x2F;NOR Flash&#x2F;SD Card读取数据，则BootROM中应该含有其相关的标准驱动和标注访问指令。特别的该核心板采用 QSPI Flash 启动方式，连接在BANK500的PS_MIO1~PS_MIO6。<br> &ensp;&ensp;BootROM 采集完 Boot Strap Pins 后呢，初始化对应的外设控制器，在启动设备上寻找相应的 FSBL 的过程中，BootROM 会去启动设备上不断的寻找这个 BootROM Header，以便完成接下来的工作交接。<strong>所以启动设备在整个启动过程中会提供 BootROM Header 和 FSBL&#x2F;User Code</strong>。<br> &ensp;&ensp;在 BootROM 找到 BootROM Header后，系统的控制权交给FSBL，如果携带了bit流文件，则继续配置 PL 端资源，最后加载 BootLoadr。</p>
+<li><p>系统上电启动执行<br> &ensp;&ensp;系统上电后，复位引脚 <em><strong>PS_POR_B</strong></em>（该引脚连接在BANK500上）被置位，此刻 ZYNQ 硬件立马去采样一组称作 <em><strong>Boot Strap Pins</strong></em> 的管脚，这组管脚告诉硬件以什么方式启动(QSPI Flash、NAND Flash、NOR Flash、SD Card)，以及是否开启PLL等，如果 Boot Mode 不是 JTAG，则 BootROM 配置所选择的 boot device 控制器。<br> &ensp;&ensp;PS 端首先执行 BootROM 上的启动代码，这段代码是直接在 On Chip ROM（OCM）中 XILINX 烧刻进去，无法看到而且也无法修改，所以 BootROM 是上电后，APU 执行的第一段代码就是 BootROM 的这部分， ZYNQ-7000 是双核 Cortex-A9，两个 CPU 核心，BootROM 由 CPU_0 来执行，此刻 CPU_1 处于 WFE 等待状态。BootROM 的主要任务是配置系统，BootROM读取存储器中的程序代码，并将 FSBL 拷贝到 OCM（On-chip memory）里 ， 这个被拷贝到片上 RAM 执行的程序就来自于我们要制作的文件———<strong> BOOT.bin </strong>(如下图)。或者，可以在 <em>non-secure Boot Mode</em> 中直接从 Quad-SPI 或 NOR 设备执行 FSBL&#x2F;User Code，即片上运行代码。<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/2.png" alt="编译产生的镜像文件和引导文件" title="编译产生的镜像文件和引导文件"><img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/7.png" alt="编译产生的镜像文件和引导文件" title="编译产生的镜像文件和引导文件"><br> <strong>🐖</strong>：由于BootROM可以从QSPI&#x2F;NAND&#x2F;NOR Flash&#x2F;SD Card读取数据，则BootROM中应该含有其相关的标准驱动和标注访问指令。特别的该核心板采用 QSPI Flash 启动方式，连接在BANK500的PS_MIO1~PS_MIO6。<br> &ensp;&ensp;BootROM 采集完 Boot Strap Pins 后呢，初始化对应的外设控制器，在启动设备上寻找相应的 FSBL 的过程中，BootROM 会去启动设备上不断的寻找这个 BootROM Header，以便完成接下来的工作交接。<strong>所以启动设备在整个启动过程中会提供 BootROM Header 和 FSBL&#x2F;User Code</strong>。<br> &ensp;&ensp;在 BootROM 找到 BootROM Header后，系统的控制权交给FSBL，如果携带了bit流文件，则继续配置 PL 端资源，最后加载 BootLoadr。</p>
 </li>
-<li><p>系统复位流程<br> &ensp;&ensp;上电启动的时候呢，会触发 PS_POR_B 信号置位，系统采集 Boot Strap Pins 几个引脚的电平状态，以便 BootRom 判断启动设备是什么，上电的流程信号如下：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/3.png" alt="上电的流程信号" title="上电的流程信号"><br> &ensp;&ensp;系统复位有很多种类型，其中只有 POR resets 会对 Boot Strap Pins 引脚信息进行重新采集，该核心板将另一个外部复位引脚PS_STR_B已经通过1.8V拉高，无法进行外部按键复位。系统的内部复位描述如下：</p>
+<li><p>系统复位流程<br> &ensp;&ensp;上电启动的时候呢，会触发 PS_POR_B 信号置位，系统采集 Boot Strap Pins 几个引脚的电平状态，以便 BootRom 判断启动设备是什么，上电的流程信号如下：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/3.png" alt="上电的流程信号" title="上电的流程信号"><br> &ensp;&ensp;系统复位有很多种类型，其中只有 POR resets 会对 Boot Strap Pins 引脚信息进行重新采集，该核心板将另一个外部复位引脚PS_SRST_B已经通过1.8V拉高，无法进行外部按键复位。系统的内部复位描述如下：</p>
 <blockquote>
 <p>The internal resets are all non-POR resets.</p>
 </blockquote>
@@ -458,7 +458,20 @@
 </li>
 </ol>
 </li>
-<li>ZYNQ芯片JTAG调试模式<br>  &ensp;&ensp;JTAG 作为一种国际测试标准协议，在此不进行赘述，个人参考的相对较为完整的网站：<a class="link" target="_blank" rel="noopener" href="https://www.fpga4fun.com/JTAG.html" title="fpga4fun">fpga4fun <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a><br>  &ensp;&ensp;在ZYNQ设备中，存在两个JTAG控制器：TAP（测试访问端口）控制器和DAP（调试访问端口）控制器。TAP控制器可以控制 PL 配置过程以及 PL 中的其他功能。而DAP控制器位于应用处理单元（APU）中。要访问这些JTAG控制器，有两种链接模式：<em><strong>Cas</strong></em>和独立模式，如图6-6所示：</li>
+<li>ZYNQ芯片JTAG调试模式<br>  &ensp;&ensp;JTAG 作为一种国际测试标准协议，在此不进行赘述，个人参考的相对较为完整的网站：<a class="link" target="_blank" rel="noopener" href="https://www.fpga4fun.com/JTAG.html" title="fpga4fun">fpga4fun <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a><br>  &ensp;&ensp;在ZYNQ设备中，存在两个JTAG控制器：TAP（测试访问端口）控制器和DAP（调试访问端口）控制器。TAP控制器可以控制 PL 配置过程以及 PL 中的其他功能。而DAP控制器位于应用处理单元（APU）中。要访问这些JTAG控制器，有两种链接模式：<em><strong>Cascaded JTAG mode</strong></em> 和 <em><strong>Independent JTAG mode</strong></em> 模式，如图6-6所示：<br>  <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/8.jpg" alt="JTAG模式详解" title="JTAG模式详解"><br>  &ensp;&ensp;a. Cascade（级联）：JTAG链设置为级联模式；可以使用PL JTAG接口访问DAP和TAP控制器。<br>  &ensp;&ensp;b. Independent（独立）：JTAG链设置为独立模式；TAP控制器可以通过PL JTAG接口访问，而DAP控制器则通过EMIO访问。</li>
+<li>ZYNQ芯片协议分析及BANK电平<br>  &ensp;&ensp;由于后续 ADC 和 PLL 时钟输出 DAC 时钟输入均采用 LVDS 协议，所以有必要在这里对 ZYNQ 的 PL 端的 LVDS 输入输出电平标准进行一定的说明。<br>  &ensp;&ensp;Xilinx将BANK分为两种（其实是3种，ultrascale器件中还有HD BANK）：<ul>
+<li>HP BANK ：High Performance 高性能</li>
+<li>HR BANK ：High Range 高电压范围。<br>  &ensp;&ensp;而在 ZYNQ 中 HP端口均用在 PS 端和 PL 端 AXI 协议的通信接口处，与外部交互的 BANK34，BANK35 和 BANK13 均属于HR接口，其供电电压及输入电压如下：<br>  <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/9.png" alt="电压标准" title="电压标准"><br>  &ensp;&ensp;电流标准：<blockquote>
+<ol>
+<li>3.3V and 2.5V standards are only supported in 3.3V I&#x2F;O banks.</li>
+<li>Supported drive strengths of 4, 8, or 12 mA in HR I&#x2F;O banks.</li>
+<li>Supported drive strengths of 4, 8, 12, or 16 mA in HR I&#x2F;O banks.</li>
+<li>Supported drive strengths of 4, 8, 12, 16, or 24 mA in HR I&#x2F;O banks</li>
+</ol>
+</blockquote>
+</li>
+</ul>
+</li>
 </ul>
 </li>
 <li><strong>AD9643-250M</strong></li>
@@ -479,7 +492,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-08-24 20:13:22
+                    :</strong> 2024-08-24 22:00:19
             </li>
         
         <li>
