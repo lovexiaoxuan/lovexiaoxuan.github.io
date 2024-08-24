@@ -404,8 +404,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-08-24 22:21:27</span>
-            <span class="mobile">2024-08-24 22:21:27</span>
+            <span class="desktop">2024-08-24 22:48:50</span>
+            <span class="mobile">2024-08-24 22:48:50</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -474,7 +474,7 @@
 </blockquote>
 </li>
 </ul>
-<p>  &ensp;&ensp;但不幸的是 LVDS 接口类型只在 HP 型接口中可以使用，而 HR 接口只能使用 LVDS_25 协议，但更不幸的是核心板将 BANK34，BANK35 和 BANK13 均采用3.3V供电，还好万幸中看见了一篇文章：<a class="link" target="_blank" rel="noopener" href="https://blog.csdn.net/lxm920714/article/details/107942572" title="Xilinx 7系FPGA LVDS使用要注意了，供电不能搞错">Xilinx 7系FPGA LVDS使用要注意了，供电不能搞错 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，当然这不是最优雅的解决办法，好在野火采用的DC-DC电源芯片在分压上留了修改电压的分压电阻：<br>  <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/10.png" alt="分压调整" title="分压调整"><br>  &ensp;&ensp;解决了BANK供电的问题，接下来让我们来仔细看看 LVDS_25 协议的电平标准<strong>（输入共模电压为：1.2V；输入输出差分电压典型值：350mV）</strong> 和 LVCMOS25 的电平标准：<br>  <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/11.png" alt="LVDS_25电平标准" title="LVDS_25电平标准"><br>  <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/12.png" alt="LVCMOS25电平和LVCMOS33电平比较" title="LVCMOS25电平和LVCMOS33电平比较"></p>
+<p>  &ensp;&ensp;但不幸的是 LVDS 接口类型只在 HP 型接口中可以使用，而 HR 接口只能使用 LVDS_25 协议，但更不幸的是核心板将 BANK34，BANK35 和 BANK13 均采用3.3V供电，还好万幸中看见了一篇文章：<a class="link" target="_blank" rel="noopener" href="https://blog.csdn.net/lxm920714/article/details/107942572" title="Xilinx 7系FPGA LVDS使用要注意了，供电不能搞错">Xilinx 7系FPGA LVDS使用要注意了，供电不能搞错 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，当然这不是最优雅的解决办法，好在野火采用的DC-DC电源芯片在分压上留了修改电压的分压电阻：<br>  <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/10.png" alt="分压调整" title="分压调整"><br>  &ensp;&ensp;解决了BANK供电的问题，接下来让我们来仔细看看 LVDS_25 协议的电平标准<strong>（输入共模电压为：1.2V；输入输出差分电压典型值：350mV）</strong> 和 LVCMOS25 的电平标准：<br>  <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/11.png" alt="LVDS_25电平标准" title="LVDS_25电平标准"><br>  <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/12.png" alt="LVCMOS25电平和LVCMOS33电平比较" title="LVCMOS25电平和LVCMOS33电平比较"><br>  &ensp;&ensp;而在针对 AD9643 的 LVDS 的上升沿和下降沿分别对应两个不同通道的数据的软件实现的过程中，注意 IBUFFDS，OBUFFDS，IDDR 原语的使用以及 SelectIO ip核的使用，其中 IBUFFDS，OBUFFDS，IDDR 原语只能正对单比特的差分信号使用，导致我吃了点亏（别问吃了什么亏🤡），而 SelectIO 可以同时对多比特使用，时钟源亦可自行选择。在 SelectIO ip核的配置中 <strong>Input DDR Data Alignment</strong> 选项中三种数据对齐模式详见文章：<a class="link" target="_blank" rel="noopener" href="https://blog.csdn.net/qq_40268672/article/details/122159654" title="数据对齐模式">数据对齐模式 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></p>
 </li>
 </ul>
 </li>
@@ -496,7 +496,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-08-24 22:21:27
+                    :</strong> 2024-08-24 22:48:50
             </li>
         
         <li>
