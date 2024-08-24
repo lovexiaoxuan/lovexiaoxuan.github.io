@@ -404,8 +404,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-08-24 15:31:27</span>
-            <span class="mobile">2024-08-24 15:31:27</span>
+            <span class="desktop">2024-08-24 16:26:35</span>
+            <span class="mobile">2024-08-24 16:26:35</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -439,9 +439,12 @@
 <h4 id="芯片选型"><a href="#芯片选型" class="headerlink" title="芯片选型"></a><strong>芯片选型</strong></h4><p>&ensp;&ensp;<strong>主控芯片</strong>：怎么说，好歹也是最后一次打国赛了，当然要选XC7Z020-2CLG400l。选的是野火的核心板（转了半天发现最便宜的020核心板就是这一块）。<br>&ensp;&ensp;<strong>ADC芯片</strong>：之前一直用的AD9269，80M采样率的上限，16比特的采样精度，CMOS输出其实已经由于大部分市场上已有的ADC模块选用的芯片，但毕竟是自己重新制作嘛，还是挑战一下更高采样率的ADC，以及稍有不同的高速协议LVDS，最终经过挑选和DAC精度匹配采样率高达250Msps的AD9643（虽然电赛DA挑战了时序最高只能跑到200M，但250M值得挑战）14比特采样精度。<br>&ensp;&ensp;<strong>DAC芯片</strong>：貌似采样率300M以上就奔着G去了，美信的芯片咱也用不起，当然初体验以及性价比最高的还得是AD9744，但是系统既然换就要换全套，经过一系列价格性能的筛选AD9746刚好和AD的采样率很好的匹配上。<br>&ensp;&ensp;<strong>PLL芯片</strong>：之前用的Si5351采用I2C通信接口，基本上可以实现150M以下频率全覆盖，200M频率便是极限，由于ADDA的时钟由PLL专门提供最为理想，ZYNQ内部PLL不进行输出，则Si5351要同时给AD，DA，ZYNQ提供参考时钟，所以5351最不能接受的性能是<br><img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/1.png" alt="Si5351-B的输出限制" title="Magic Gardens"><br>&ensp;&ensp;AD9552是一款比较符合设计要求的PLL芯片，虽然不能实现频率连续全覆盖，但在50~250M的频率范围内重要的频率均可提供，提供LVDS协议，LVPECL协议和CMOS输出<br>&ensp;&ensp;<strong>ADDA驱动芯片</strong>：目前考虑使用LTC6419（单端转差分的ADC驱动器）代替ADC前级的巴伦来改善AD的低频采用能力（尚待开发…）</p>
 <h4 id="芯片开发细节"><a href="#芯片开发细节" class="headerlink" title="芯片开发细节"></a><strong>芯片开发细节</strong></h4><ol>
 <li><strong>XC7Z020-2CLG400l</strong><ul>
-<li>ZYNQ芯片的启动过程和复位分析<br>  &ensp;&ensp;此部分详情见ug585手册Chapter 6:Boot and Configuration<br>  &ensp;&ensp;ZYNQ的启动分为两种情况：<em>secure Boot Mode</em>和<em>non-secure Boot Mode</em>，本系统仅对<em>non-secure Boot Mode</em>进行分析：<blockquote>
+<li>ZYNQ芯片的启动过程和复位分析<br>  &ensp;&ensp;此部分详情见ug585手册 Chapter 6:Boot and Configuration<br>  &ensp;&ensp;ZYNQ的启动分为两种情况：<em>secure Boot Mode</em> 和 <em>non-secure Boot Mode</em>，本系统仅对 <em>non-secure Boot Mode</em> 进行分析：<blockquote>
 <p>JTAG always implies a non-secure environment.</p>
 </blockquote>
+<ol>
+<li>系统上电启动执行<br> &ensp;&ensp;系统上电后，复位引脚 <em><strong>PS_POR_B</strong></em>（该引脚连接在BANK500上）被置位，此刻 ZYNQ 硬件立马去采样一组称作 <em><strong>Boot Strap Pins</strong></em> 的管脚，这组管脚告诉硬件以什么方式启动(QSPI Flash、NAND Flash、NOR Flash、SD Card)，以及是否开启PLL等。<br> &ensp;&ensp;PS 端首先执行 BootROM 上的启动代码，这段代码是直接在 On Chip ROM（OCM）中 XILINX 烧刻进去，无法看到而且也无法修改，所以 BootROM 是上电后，APU 执行的第一段代码就是 BootROM 的这部分， ZYNQ-7000 是双核 Cortex-A9，两个 CPU 核心，BootROM 由 CPU_0 来执行，此刻 CPU_1 处于 WFE 等待状态。BootROM 的主要任务是配置系统，BootROM读取存储器中的程序代码，并将FSBL拷贝到OCM（On-chip memory）里 ， 这个被拷贝到片上 RAM 执行的程序就来自于我们要制作的文件———<strong> BOOT.bin </strong>。或者，可以在 <em>non-secure Boot Mode</em> 中直接从 Quad-SPI 或 NOR 设备执行 FSBL&#x2F;User Code，即片上运行代码。<br> <strong>🐖</strong>：由于BootROM可以从QSPI&#x2F;NAND&#x2F;NOR Flash&#x2F;SD Card读取数据，则BootROM中应该含有其相关的标准驱动和标注访问指令。特别的该核心板采用 QSPI Flash 启动方式，连接PS_MIO1~PS_MIO6。</li>
+</ol>
 </li>
 <li>ZYNQ芯片JTAG调试模式</li>
 </ul>
@@ -464,7 +467,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-08-24 15:31:27
+                    :</strong> 2024-08-24 16:26:35
             </li>
         
         <li>
