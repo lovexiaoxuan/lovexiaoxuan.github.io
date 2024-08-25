@@ -404,8 +404,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-08-25 21:26:41</span>
-            <span class="mobile">2024-08-25 21:26:41</span>
+            <span class="desktop">2024-08-25 22:20:57</span>
+            <span class="mobile">2024-08-25 22:20:57</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -484,14 +484,14 @@
 <li>Supply Voltages：模拟供电 AVDD 和数字供电 DRVDD 均提供1.8V 电压</li>
 <li>Total Power Consumption：785mW at 250Msps</li>
 <li>IF Sampling Frequencies：400MHz</li>
-<li>Flexible Analog Input Range：1.75 V p-p nominal</li>
+<li>Flexible Analog Input Range：1.75 V p-p nominal（configurable in 0x18）</li>
 <li>LVDS Output Port：ANSI-644，reference：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/media/cn/technical-documentation/application-notes/AN-1177_cn.pdf" title="AN-1177">AN-1177 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/media/en/technical-documentation/application-notes/5957542118600205599850975382134073431740717454123180480718AN586.pdf" title="AN-586">AN-586 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></li>
 </ul>
 <p> &ensp;&ensp;采样时钟 CLK+ 和 CLK- 采用 LVDS 输入，输入偏置电压由芯片内部通过引脚 VCM 提供（Vvcm &#x3D; 0.9V），该时钟直接由 AD9552 提供。差分电压（CLK+ - CLK-）的峰峰值范围在0.3Vpp~3.6Vpp，则 AD9552 提供的 Strong LVDS 或者 Weak LVDS 均可满足要求。<br> &ensp;&ensp;同步复位引脚 SYNC 相较于 AD9269 略有不同，AD9269 内部对该引脚进行30KΩ电阻的下拉，而 AD9643 对该引脚进行16KΩ的内部偏置，既不属于该引脚的高电平范围，也不属于该引脚的低电平范围，相当于真正的悬空了。该引脚通过有效高电平冲击复位系统，用于同步多个 ADC 同时采样，软件配置详见 <strong>0X3A Bits[2:0]</strong>。</p>
 <blockquote>
 <p>A valid SYNC causes the clock divider to reset to its initial state.</p>
 </blockquote>
-<p> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/14.png" alt="SYNC内部偏置电路" title="SYNC内部偏置电路"><br> &ensp;&ensp;ADI 公司的 ADC (至少我用过的几片ADC) 均采用较为类似 I2C 的一种 SPI 协议对 ADC 内部的寄存器进行读写操作。具体协议可以参考：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/media/en/technical-documentation/application-notes/AN-877.pdf" title="AN-877">AN-877 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，其中与 SPI 相关的三个引脚和 OEB(低电平使能输出)，PDWN（高电平关闭外部电源）均内部下拉，输入输出高电平范围在1.22V~2.1V。<br> &ensp;&ensp;LVDS 输出标准电流为 350mA，<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/13.png" alt="LVDS内部输出电路" title="LVDS内部输出电路"></p>
+<p> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/14.png" alt="SYNC内部偏置电路" title="SYNC内部偏置电路"><br> &ensp;&ensp;ADI 公司的 ADC (至少我用过的几片ADC) 均采用较为类似 I2C 的一种 SPI 协议对 ADC 内部的寄存器进行读写操作。具体协议可以参考：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/media/en/technical-documentation/application-notes/AN-877.pdf" title="AN-877">AN-877 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，其中与 SPI 相关的三个引脚和 OEB(低电平使能输出)，PDWN（高电平关闭外部电源）均内部下拉，输入输出高电平范围在1.22V~2.1V。<br> &ensp;&ensp;LVDS 输出标准电流为 350mA，可以通过配置寄存器0x15修改，输出共模电压为1.22V，与 ZYNQ 的 LVDS_25 协议的输入共模电压不谋而合，差模电压350mV符合标准。<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/13.png" alt="LVDS内部输出电路" title="LVDS内部输出电路"><br> &ensp;&ensp;AD9643 存在两种采样模式：<em><strong>PARALLEL INTERLEAVED MODE</strong></em> 和 <em><strong>EVEN&#x2F;ODD MODE</strong></em>。其中 PARALLEL 为默认模式(可通过寄存器0X16配置成 EVEN&#x2F;ODD MODE)，其时序图如下：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/15.png" alt="PARALLEL 时序图" title="PARALLEL 时序图"><br> &ensp;&ensp;AD9643 的14位输出为二级制补码，可通过寄存器0X14切换成偏移二进制。两种<strong>马原</strong>之间的关系是：<font color="8A2BE2">偏移二进制最高位取反即为二进制补码</font>。</p>
 </li>
 <li><p><strong>AD9746</strong></p>
 </li>
@@ -512,7 +512,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-08-25 21:26:41
+                    :</strong> 2024-08-25 22:20:57
             </li>
         
         <li>
