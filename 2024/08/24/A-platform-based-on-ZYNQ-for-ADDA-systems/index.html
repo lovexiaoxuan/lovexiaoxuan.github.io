@@ -404,8 +404,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-08-25 22:33:33</span>
-            <span class="mobile">2024-08-25 22:33:33</span>
+            <span class="desktop">2024-08-25 22:40:58</span>
+            <span class="mobile">2024-08-25 22:40:58</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -491,7 +491,7 @@
 <blockquote>
 <p>A valid SYNC causes the clock divider to reset to its initial state.</p>
 </blockquote>
-<p> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/14.png" alt="SYNC内部偏置电路" title="SYNC内部偏置电路"><br> &ensp;&ensp;ADI 公司的 ADC (至少我用过的几片ADC) 均采用较为类似 I2C 的一种 SPI 协议对 ADC 内部的寄存器进行读写操作。具体协议可以参考：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/media/en/technical-documentation/application-notes/AN-877.pdf" title="AN-877">AN-877 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，其中与 SPI 相关的三个引脚和 OEB(低电平使能输出)，PDWN（高电平关闭外部电源）均内部下拉，输入输出高电平范围在1.22V~2.1V。<br> &ensp;&ensp;LVDS 输出标准电流为 350mA，可以通过配置寄存器0x15修改，输出共模电压为1.22V，与 ZYNQ 的 LVDS_25 协议的输入共模电压不谋而合，差模电压350mV符合标准。<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/13.png" alt="LVDS内部输出电路" title="LVDS内部输出电路"><br> &ensp;&ensp;AD9643 存在两种采样模式：<em><strong>PARALLEL INTERLEAVED MODE</strong></em> 和 <em><strong>EVEN&#x2F;ODD MODE</strong></em>。其中 PARALLEL 为默认模式(可通过寄存器0X16配置成 EVEN&#x2F;ODD MODE)，其时序图如下：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/15.png" alt="PARALLEL 时序图" title="PARALLEL 时序图"><br> &ensp;&ensp;模拟输入部分，由前级巴伦（较低频段会有衰减，具有一定带通滤波器功能）或者 ADC 驱动器（低频高频表现均较好）完成单端转差分后，由芯片 VCM 引脚提供 0.9V 偏置电压后提供给芯片；AD9643 的14位输出为二级制补码，可通过寄存器0X14切换成偏移二进制。两种🐎🐵之间的关系是：<font color="8A2BE2">偏移二进制最高位取反即为二进制补码</font>。</p>
+<p> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/14.png" alt="SYNC内部偏置电路" title="SYNC内部偏置电路"><br> &ensp;&ensp;ADI 公司的 ADC (至少我用过的几片ADC) 均采用较为类似 I2C 的一种 SPI 协议对 ADC 内部的寄存器进行读写操作。具体协议可以参考：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/media/en/technical-documentation/application-notes/AN-877.pdf" title="AN-877">AN-877 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，其中与 SPI 相关的三个引脚和 OEB(低电平使能输出)，PDWN（高电平关闭外部电源）均内部下拉，输入输出高电平范围在1.22V~2.1V。<br> &ensp;&ensp;LVDS 输出标准电流为 350mA，可以通过配置寄存器0x15修改，输出共模电压为1.22V，与 ZYNQ 的 LVDS_25 协议的输入共模电压不谋而合，差模电压350mV符合标准。<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/13.png" alt="LVDS内部输出电路" title="LVDS内部输出电路"><br> &ensp;&ensp;AD9643 存在两种采样模式：<em><strong>PARALLEL INTERLEAVED MODE</strong></em> 和 <em><strong>EVEN&#x2F;ODD MODE</strong></em>。其中 PARALLEL 为默认模式(可通过寄存器0X16配置成 EVEN&#x2F;ODD MODE)，其时序图如下（以 Data Clock Out 为参考，上升沿和下降沿分别对应两个采样通道的数据）：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/15.png" alt="PARALLEL 时序图" title="PARALLEL 时序图"><br> &ensp;&ensp;模拟输入部分，由前级巴伦（较低频段会有衰减，具有一定带通滤波器功能）或者 ADC 驱动器（低频高频表现均较好）完成单端转差分后，由芯片 VCM 引脚提供 0.9V 偏置电压后提供给芯片；AD9643 的14位输出为二级制补码，可通过寄存器0X14切换成偏移二进制。两种🐎🐵之间的关系是：<font color="8A2BE2">偏移二进制最高位取反即为二进制补码</font>。</p>
 </li>
 <li><p><strong>AD9746</strong></p>
 </li>
@@ -512,7 +512,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-08-25 22:33:33
+                    :</strong> 2024-08-25 22:40:58
             </li>
         
         <li>
