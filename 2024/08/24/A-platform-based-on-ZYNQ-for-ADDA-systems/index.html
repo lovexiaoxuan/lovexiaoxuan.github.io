@@ -404,8 +404,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-08-25 22:40:58</span>
-            <span class="mobile">2024-08-25 22:40:58</span>
+            <span class="desktop">2024-09-01 08:33:54</span>
+            <span class="mobile">2024-09-01 08:33:54</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -497,6 +497,14 @@
 </li>
 <li><p><strong>AD9552</strong></p>
 </li>
+<li><p><strong>LT6419</strong></p>
+<ul>
+<li>Supply Voltage：2.7V ~ 5.25V（由于作为 ADC 的输入驱动，需要输出共模电压0.9V，峰峰值2V以内的模拟信号，则本系统采用3.3V供电已经足够电源轨）</li>
+<li>Supply Current：104mA totally</li>
+<li>Gain-Bandwidth Product：10GHz</li>
+<li>Input Noise Density：1.1nV&#x2F;√Hz<br> &ensp;&ensp;作为巴伦输入的替代方案，从无源方案到有源方案，自然会有一些功耗上的牺牲，但同时获得的在低频采样性能的提升是值得尝试的。由于整个系统供电系统不考虑使用负电，我一直在思考该芯片在 V+ 和 V- 分别提供3.3V高电平和系统参考地后，能否给6419输入例如一个无直流偏置的正弦波，在datasheet搜寻无果后，最终在：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/cn/resources/analog-dialogue/articles/rules-for-high-speed-differential-adc-drivers.html" title="高速差分 ADC 驱动器设计指南">高速差分 ADC 驱动器设计指南 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 这篇文章里得到了答案。</li>
+</ul>
+</li>
 </ol>
 
         </div>
@@ -512,7 +520,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-08-25 22:40:58
+                    :</strong> 2024-09-01 08:33:54
             </li>
         
         <li>
