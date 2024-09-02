@@ -404,8 +404,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-09-01 08:35:28</span>
-            <span class="mobile">2024-09-01 08:35:28</span>
+            <span class="desktop">2024-09-02 09:17</span>
+            <span class="mobile">2024-09-02 09:17</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -502,7 +502,7 @@
 <li>Supply Voltage：2.7V ~ 5.25V（由于作为 ADC 的输入驱动，需要输出共模电压0.9V，峰峰值2V以内的模拟信号，则本系统采用3.3V供电已经足够电源轨）</li>
 <li>Supply Current：104mA totally</li>
 <li>Gain-Bandwidth Product：10GHz</li>
-<li>Input Noise Density：1.1nV&#x2F;√Hz<br> &ensp;&ensp;作为巴伦输入的替代方案，从无源方案到有源方案，自然会有一些功耗上的牺牲，但同时获得的在低频采样性能的提升是值得尝试的。由于整个系统供电系统不考虑使用负电，我一直在思考该芯片在 V+ 和 V- 分别提供3.3V高电平和系统参考地后，能否给6419输入例如一个无直流偏置的正弦波，在datasheet搜寻无果后，最终在：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/cn/resources/analog-dialogue/articles/rules-for-high-speed-differential-adc-drivers.html" title="高速差分 ADC 驱动器设计指南">高速差分 ADC 驱动器设计指南 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 这篇文章里得到了答案。</li>
+<li>Input Noise Density：1.1nV&#x2F;√Hz<br> &ensp;&ensp;作为巴伦输入的替代方案，从无源方案到有源方案，自然会有一些功耗上的牺牲，但同时获得的在低频采样性能的提升是值得尝试的。由于整个系统供电系统不考虑使用负电，我一直在思考该芯片在 V+ 和 V- 分别提供3.3V高电平和系统参考地后，能否给6419输入例如一个无直流偏置的正弦波，在datasheet搜寻无果后，最终在：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/cn/resources/analog-dialogue/articles/rules-for-high-speed-differential-adc-drivers.html" title="高速差分 ADC 驱动器设计指南">高速差分 ADC 驱动器设计指南 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 这篇文章里得到了答案。好巧不巧，恰好上手了LTspice，对LTC6419进行了单端输入的仿真。<font color="8A2BE2">在单电源3.3V供电的条件下，单端输入的电压范围可以为峰峰值为2V的正弦波</font>。<br> &ensp;&ensp;另一个棘手的问题是单端输入条件下要求相对严格的输入阻抗，在输入信号源的输出阻抗为50Ω的情况下，需要额外的补偿电阻使得 LTC6419 的输入阻抗亦为50Ω，如图所示：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/18.png" alt="阻抗匹配" title="阻抗匹配"><br> &ensp;&ensp;计算公式如下：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/19.png" alt="RT" title="RT"><img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/20.png" alt="RINM" title="RINM"><br> &ensp;&ensp;在补偿电阻为66.5Ω的情况下即可完成上述匹配过程，同时注意输入接地端的电阻补偿。<br> &ensp;&ensp;由于PCB板本身在做完阻抗匹配后传输线本身对地阻抗就有50Ω，这使得从PCB板的输入端看去，整个系统的阻抗在串并电阻网络后不再可能出现50Ω，这使得使用50Ω的信号源输入，在没有提供前级增益的情况下，可采集的最小信号幅度不是该系统能采集的真正最小信号。所以采用内部阻抗非常小的信号源输入，问题就显得简单很多。仿真原理图和结果如图所示：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/16.png" alt="仿真原理图" title="仿真原理图"><br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/17.png" alt="仿真结果" title="仿真结果"></li>
 </ul>
 </li>
 </ol>
@@ -520,7 +520,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-09-01 08:35:28
+                    :</strong> 2024-09-02 09:00:17
             </li>
         
         <li>
