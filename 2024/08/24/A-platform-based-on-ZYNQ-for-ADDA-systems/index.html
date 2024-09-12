@@ -404,8 +404,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-09-12 22:49</span>
-            <span class="mobile">2024-09-12 22:49</span>
+            <span class="desktop">2024-09-12 23:11:23</span>
+            <span class="mobile">2024-09-12 23:11:23</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -500,11 +500,18 @@
 <li>Auxiliary 10-bit current DACs</li>
 <li>Internal 1.2 V precision reference voltage source</li>
 <li>315 mW power at 250MHz（output 20MHz signal），3 mW when all disabled</li>
-<li>Operates from 1.8 V and 3.3 V supplies（供电引脚较多）<br> &ensp;&ensp;整个DAC的系统框图如下：<img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/21.png" alt="DAC框图" title="DAC框图"><br> &ensp;&ensp;当然这里补充一点关于 DAC 和 ADC 采样精度和噪声之间的关系，假设采样得到的量化噪声均匀分布，则根据随机过程相关知识，该噪声为白噪声，假设采样精度为 <strong>B bit</strong>，总电压为 V，可推得 $Var[e(n)] &#x3D; \frac{V·2^{-2B}}{12}$，将其转化为分贝则可得 $10\log{Var[e(n)]} &#x3D; 10\log{V} - 10\log{12} - 20B\log{2}$，则 ADC 和 DAC 精度每增加一位则噪声方差减小 <strong>6dB</strong>。<br> &ensp;&ensp;AD9746输入数据精度为 14 Bits，DAC 输入采样时钟最大频率为250MHz，亦为差分输入，共模电压为400mV，差分信号峰峰值为800mV。输入数据流的高电平需要2.0V，由于 ZYNQ 的 Bank35 已经修改分压电阻供电为2.5V，则 DAC 的单端输入通过 Bank34 完成。<br> &ensp;&ensp;对于 AD9746 的 SPI 接口又与 AD9643 的 SPI 接口略有不同，其SPI可工作为四线模式（通过寄存器0x00的 bits[7] disable SDO 变为三线模式）。四线模式下，SDIO传输指令和写入数据，SDO负责读取数据的传输。<br> &ensp;&ensp;在默认工作模式下，双通道输入数据双通道模拟输出（可通过寄存器0x02的 bits[6]配为 1，单通道数据输入），在 single-port 模式下需要 IQSEL 信号作为协助交织输出。当 IQSEL 输入为高电平时，端口1数据传送到 DAC1，当 IQSEL 输入为低电平时，端口1数据传送到 DAC2。IQSEL 输入必须始终与其他数据总线信号一致并在时间上保持一致。<blockquote>
-<p>In dual-port mode, the IQSEL input is ignored.<br> &ensp;&ensp;数据时钟输出（DCO）信号可用作固定时基，可以用于提供给ZYNQ，告诉ZYNQ在 DCO 的上升沿或者下降沿输出数据。此输出信号始终以采样率运行。可以通过置位 INVDCO（寄存器0x02的 bits[4]）位来反转它。由于 single-port 模式使用较少，这里仅展示 dual-port 的时序：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/22.png" alt="dual-port 的时序" title="dual-port 的时序"></p>
-</blockquote>
-</li>
+<li>Operates from 1.8 V and 3.3 V supplies（供电引脚较多）<br> &ensp;&ensp;整个DAC的系统框图如下：<img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/21.png" alt="DAC框图" title="DAC框图"><br> &ensp;&ensp;当然这里补充一点关于 DAC 和 ADC 采样精度和噪声之间的关系，假设采样得到的量化噪声均匀分布，则根据随机过程相关知识，该噪声为白噪声，假设采样精度为 <strong>B bit</strong>，总电压为 V，可推得</li>
 </ul>
+ <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Var\left[ e\left( n\right) \right] =\dfrac&#123;V\cdot 2^&#123;2B&#125;&#125;&#123;12&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p> 将其转化为分贝则可得</p>
+ <div class="highlight-container" data-rel="Plaintext"><figure class="iseeu highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">10\log&#123;Var[e(n)]&#125; = 10\log&#123;V&#125; - 10\log&#123;12&#125; - 20B\log&#123;2&#125;</span><br></pre></td></tr></table></figure></div>
+
+<p> 则 ADC 和 DAC 精度每增加一位则噪声方差减小 <strong>6dB</strong>。<br> &ensp;&ensp;AD9746输入数据精度为 14 Bits，DAC 输入采样时钟最大频率为250MHz，亦为差分输入，共模电压为400mV，差分信号峰峰值为800mV。输入数据流的高电平需要2.0V，由于 ZYNQ 的 Bank35 已经修改分压电阻供电为2.5V，则 DAC 的单端输入通过 Bank34 完成。<br> &ensp;&ensp;对于 AD9746 的 SPI 接口又与 AD9643 的 SPI 接口略有不同，其SPI可工作为四线模式（通过寄存器0x00的 bits[7] disable SDO 变为三线模式）。四线模式下，SDIO传输指令和写入数据，SDO负责读取数据的传输。当 AD9746 上电时，会接通一个施加于 RESET 引脚的高电平有效脉冲。这确保了所有 control register bits的默认状态。此外，一旦 RESET 引脚变为低电平，SPI 端口就可以激活，因此 CSB 必须保持高电平，这之后即可修改寄存器中的值；只要 RESET 引脚保持高电平，就会使能 Pin 模式。在引脚模式下，四个 SPI 端口引脚承担辅助功能，功能如下表：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/23.png" alt="Pin Mode" title="Pin Mode"><br> &ensp;&ensp;在默认工作模式下，双通道输入数据双通道模拟输出（可通过寄存器0x02的 bits[6]配为 1，单通道数据输入），在 single-port 模式下需要 IQSEL 信号作为协助交织输出。当 IQSEL 输入为高电平时，端口1数据传送到 DAC1，当 IQSEL 输入为低电平时，端口1数据传送到 DAC2。IQSEL 输入必须始终与其他数据总线信号一致并在时间上保持一致。</p>
+<blockquote>
+<p>In dual-port mode, the IQSEL input is ignored.</p>
+</blockquote>
+<p> &ensp;&ensp;数据时钟输出（DCO）信号可用作固定时基，可以用于提供给ZYNQ，告诉ZYNQ在 DCO 的上升沿或者下降沿输出数据。此输出信号始终以采样率运行。可以通过置位 INVDCO（寄存器0x02的 bits[4]）位来反转它。由于 single-port 模式使用较少，这里仅展示 dual-port 的时序：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/22.png" alt="dual-port 的时序" title="dual-port 的时序"></p>
 </li>
 <li><p><strong>AD9552</strong></p>
 </li>
@@ -531,7 +538,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-09-12 22:49:00
+                    :</strong> 2024-09-12 23:11:23
             </li>
         
         <li>
