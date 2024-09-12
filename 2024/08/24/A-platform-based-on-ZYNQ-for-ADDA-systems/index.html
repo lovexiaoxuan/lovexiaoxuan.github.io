@@ -350,7 +350,7 @@
         <div class="label text-third-text-color text-sm">Categories</div>
     </a>
     <a class="item tag-count-item flex flex-col justify-center items-center w-20" href="/archives">
-        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">2</div>
+        <div class="number text-2xl sm:text-xl text-second-text-color font-semibold">3</div>
         <div class="label text-third-text-color text-sm">Posts</div>
     </a>
 </div>
@@ -404,8 +404,8 @@
     
         <span class="article-date article-meta-item">
             <i class="fa-regular fa-wrench"></i>&nbsp;
-            <span class="desktop">2024-09-02 09:49:14</span>
-            <span class="mobile">2024-09-02 09:49:14</span>
+            <span class="desktop">2024-09-12 22:49</span>
+            <span class="mobile">2024-09-12 22:49</span>
             <span class="hover-info">Updated</span>
         </span>
     
@@ -482,7 +482,7 @@
 <li><p><strong>AD9643-250M</strong></p>
 <ul>
 <li>Supply Voltages：模拟供电 AVDD 和数字供电 DRVDD 均提供1.8V 电压</li>
-<li>Total Power Consumption：785mW at 250Msps</li>
+<li>Total Power Consumption：785mW at 250Msps，10mW when all disabled</li>
 <li>IF Sampling Frequencies：400MHz</li>
 <li>Flexible Analog Input Range：1.75 V p-p nominal（configurable in 0x18）</li>
 <li>LVDS Output Port：ANSI-644，reference：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/media/cn/technical-documentation/application-notes/AN-1177_cn.pdf" title="AN-1177">AN-1177 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/media/en/technical-documentation/application-notes/5957542118600205599850975382134073431740717454123180480718AN586.pdf" title="AN-586">AN-586 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a></li>
@@ -494,6 +494,17 @@
 <p> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/14.png" alt="SYNC内部偏置电路" title="SYNC内部偏置电路"><br> &ensp;&ensp;ADI 公司的 ADC (至少我用过的几片ADC) 均采用较为类似 I2C 的一种 SPI 协议对 ADC 内部的寄存器进行读写操作。具体协议可以参考：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/media/en/technical-documentation/application-notes/AN-877.pdf" title="AN-877">AN-877 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a>，其中与 SPI 相关的三个引脚和 OEB(低电平使能输出)，PDWN（高电平关闭外部电源）均内部下拉，输入输出高电平范围在1.22V~2.1V。<br> &ensp;&ensp;LVDS 输出标准电流为 350mA，可以通过配置寄存器0x15修改，输出共模电压为1.22V，与 ZYNQ 的 LVDS_25 协议的输入共模电压不谋而合，差模电压350mV符合标准。<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/13.png" alt="LVDS内部输出电路" title="LVDS内部输出电路"><br> &ensp;&ensp;AD9643 存在两种采样模式：<em><strong>PARALLEL INTERLEAVED MODE</strong></em> 和 <em><strong>EVEN&#x2F;ODD MODE</strong></em>。其中 PARALLEL 为默认模式(可通过寄存器0X16配置成 EVEN&#x2F;ODD MODE)，其时序图如下（以 Data Clock Out 为参考，上升沿和下降沿分别对应两个采样通道的数据）：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/24/A-platform-based-on-ZYNQ-for-ADDA-systems/15.png" alt="PARALLEL 时序图" title="PARALLEL 时序图"><br> &ensp;&ensp;模拟输入部分，由前级巴伦（较低频段会有衰减，具有一定带通滤波器功能）或者 ADC 驱动器（低频高频表现均较好）完成单端转差分后，由芯片 VCM 引脚提供 0.9V 偏置电压后提供给芯片；AD9643 的14位输出为二级制补码，可通过寄存器0X14切换成偏移二进制。两种🐎🐵之间的关系是：<font color="8A2BE2">偏移二进制最高位取反即为二进制补码</font>。</p>
 </li>
 <li><p><strong>AD9746</strong></p>
+<ul>
+<li>LVCMOS inputs with dual-port（也可单通道数据输入双通道交织模拟输出）</li>
+<li>Differential analog current outputs are programmable（范围:8.6 mA to 31.7 mA full-scale）</li>
+<li>Auxiliary 10-bit current DACs</li>
+<li>Internal 1.2 V precision reference voltage source</li>
+<li>315 mW power at 250MHz（output 20MHz signal），3 mW when all disabled</li>
+<li>Operates from 1.8 V and 3.3 V supplies（供电引脚较多）<br> &ensp;&ensp;整个DAC的系统框图如下：<img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/21.png" alt="DAC框图" title="DAC框图"><br> &ensp;&ensp;当然这里补充一点关于 DAC 和 ADC 采样精度和噪声之间的关系，假设采样得到的量化噪声均匀分布，则根据随机过程相关知识，该噪声为白噪声，假设采样精度为 <strong>B bit</strong>，总电压为 V，可推得 $Var[e(n)] &#x3D; \frac{V·2^{-2B}}{12}$，将其转化为分贝则可得 $10\log{Var[e(n)]} &#x3D; 10\log{V} - 10\log{12} - 20B\log{2}$，则 ADC 和 DAC 精度每增加一位则噪声方差减小 <strong>6dB</strong>。<br> &ensp;&ensp;AD9746输入数据精度为 14 Bits，DAC 输入采样时钟最大频率为250MHz，亦为差分输入，共模电压为400mV，差分信号峰峰值为800mV。输入数据流的高电平需要2.0V，由于 ZYNQ 的 Bank35 已经修改分压电阻供电为2.5V，则 DAC 的单端输入通过 Bank34 完成。<br> &ensp;&ensp;对于 AD9746 的 SPI 接口又与 AD9643 的 SPI 接口略有不同，其SPI可工作为四线模式（通过寄存器0x00的 bits[7] disable SDO 变为三线模式）。四线模式下，SDIO传输指令和写入数据，SDO负责读取数据的传输。<br> &ensp;&ensp;在默认工作模式下，双通道输入数据双通道模拟输出（可通过寄存器0x02的 bits[6]配为 1，单通道数据输入），在 single-port 模式下需要 IQSEL 信号作为协助交织输出。当 IQSEL 输入为高电平时，端口1数据传送到 DAC1，当 IQSEL 输入为低电平时，端口1数据传送到 DAC2。IQSEL 输入必须始终与其他数据总线信号一致并在时间上保持一致。<blockquote>
+<p>In dual-port mode, the IQSEL input is ignored.<br> &ensp;&ensp;数据时钟输出（DCO）信号可用作固定时基，可以用于提供给ZYNQ，告诉ZYNQ在 DCO 的上升沿或者下降沿输出数据。此输出信号始终以采样率运行。可以通过置位 INVDCO（寄存器0x02的 bits[4]）位来反转它。由于 single-port 模式使用较少，这里仅展示 dual-port 的时序：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/22.png" alt="dual-port 的时序" title="dual-port 的时序"></p>
+</blockquote>
+</li>
+</ul>
 </li>
 <li><p><strong>AD9552</strong></p>
 </li>
@@ -502,7 +513,7 @@
 <li>Supply Voltage：2.7V ~ 5.25V（由于作为 ADC 的输入驱动，需要输出共模电压0.9V，峰峰值2V以内的模拟信号，则本系统采用3.3V供电已经足够电源轨）</li>
 <li>Supply Current：104mA totally</li>
 <li>Gain-Bandwidth Product：10GHz</li>
-<li>Input Noise Density：1.1nV&#x2F;√Hz<br> &ensp;&ensp;作为巴伦输入的替代方案，从无源方案到有源方案，自然会有一些功耗上的牺牲，但同时获得的在低频采样性能的提升是值得尝试的。由于整个系统供电系统不考虑使用负电，我一直在思考该芯片在 V+ 和 V- 分别提供3.3V高电平和系统参考地后，能否给6419输入例如一个无直流偏置的正弦波，在datasheet搜寻无果后，最终在：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/cn/resources/analog-dialogue/articles/rules-for-high-speed-differential-adc-drivers.html" title="高速差分 ADC 驱动器设计指南">高速差分 ADC 驱动器设计指南 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 这篇文章里得到了答案。好巧不巧，恰好上手了LTspice，对LTC6419进行了单端输入的仿真。<font color="8A2BE2">在单电源3.3V供电的条件下，单端输入的电压范围可以为峰峰值为2V的正弦波</font>。<br> &ensp;&ensp;另一个棘手的问题是单端输入条件下要求相对严格的输入阻抗，在输入信号源的输出阻抗为50Ω的情况下，需要额外的补偿电阻使得 LTC6419 的输入阻抗亦为50Ω，如图所示：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/18.png" alt="阻抗匹配" title="阻抗匹配"><br> &ensp;&ensp;计算公式如下：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/19.png" alt="RT" title="RT"><img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/20.png" alt="RINM" title="RINM"><br> &ensp;&ensp;在补偿电阻为66.5Ω的情况下即可完成上述匹配过程，同时注意输入接地端的电阻补偿。<br> &ensp;&ensp;由于PCB板本身在做完阻抗匹配后传输线本身对地阻抗就有50Ω，这使得从PCB板的输入端看去，整个系统的阻抗在串并电阻网络后不再可能出现50Ω，这使得使用50Ω的信号源输入，在没有提供前级增益的情况下，可采集的最小信号幅度不是该系统能采集的真正最小信号。所以采用内部阻抗非常小的信号源输入，问题就显得简单很多。仿真原理图和结果如图所示：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/16.png" alt="仿真原理图" title="仿真原理图"><br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/17.png" alt="仿真结果" title="仿真结果"><br> &ensp;&ensp;其中绿色信号表示输入信号大小（此处为直流偏置为0，峰峰值为1.1V的正弦波），红蓝分别为两路差分输出，由于Vocm未外部提供，所以两信号的直流偏置为0.828V（3.3V➗4）的内部电阻分压。<br> &ensp;&ensp;对于输入的信号进行带通或者低通也是通信系统不可缺少的环节之一。对于单端输入可以在输入前即对信号进行滤波，也可对 LTC6419 输出的差分对进行滤波，数据手册较为推荐后一种。电源和地，V+ 和 V- 之间均要用 <strong>0.1uF||1000pF</strong> 短路。当LTC6419配置为低差分增益时（如150Ω单位增益），将反馈电容器 （CF） 与每个反馈电阻器 （RF） 并联通常是有利的。使用 CF 实现了一个极点-零对（其中零点频率通常小于极点频率），并为放大器周围的反馈环路增益增加了正相位。因此，如果选择得当，添加 CF 可以提高相位裕量并改善反馈回路的稳定性响应。当 RI &#x3D; RF &#x3D; 150Ω 时，建议大多数一般应用在每个 RF 上使用 CF &#x3D; 1.3pF。SHDN 引脚当这些引脚连接到 V– 时，相应的放大器被禁用并仅仅流过 100μA 的电源电流，降低系统功耗。</li>
+<li>Input Noise Density：1.1nV&#x2F;√Hz<br> &ensp;&ensp;作为巴伦输入的替代方案，从无源方案到有源方案，自然会有一些功耗上的牺牲，但同时获得的在低频采样性能的提升是值得尝试的。由于整个系统供电系统不考虑使用负电，我一直在思考该芯片在 V+ 和 V- 分别提供3.3V高电平和系统参考地后，能否给6419输入例如一个无直流偏置的正弦波，在datasheet搜寻无果后，最终在：<a class="link" target="_blank" rel="noopener" href="https://www.analog.com/cn/resources/analog-dialogue/articles/rules-for-high-speed-differential-adc-drivers.html" title="高速差分 ADC 驱动器设计指南">高速差分 ADC 驱动器设计指南 <i class="fa-regular fa-arrow-up-right-from-square fa-sm"></i></a> 这篇文章里得到了答案。好巧不巧，恰好上手了LTspice，对LTC6419进行了单端输入的仿真。<font color="8A2BE2">在单电源3.3V供电的条件下，单端输入的电压范围可以为峰峰值为2V的正弦波</font>。<br> &ensp;&ensp;另一个棘手的问题是单端输入条件下要求相对严格的输入阻抗，在输入信号源的输出阻抗为50Ω的情况下，需要额外的补偿电阻使得 LTC6419 的输入阻抗亦为50Ω，如图所示：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/18.png" alt="阻抗匹配" title="阻抗匹配"><br> &ensp;&ensp;计算公式如下：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/19.png" alt="RT" title="RT"><img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/20.png" alt="RINM" title="RINM"><br> &ensp;&ensp;在补偿电阻为66.5Ω的情况下即可完成上述匹配过程，同时注意输入接地端的电阻补偿。<br> &ensp;&ensp;由于PCB板本身在做完阻抗匹配后传输线本身对地阻抗就有50Ω，这使得从PCB板的输入端看去，整个系统的阻抗在串并电阻网络后不再可能出现50Ω，这使得使用50Ω的信号源输入，在没有提供前级增益的情况下，可采集的最小信号幅度不是该系统能采集的真正最小信号。所以采用内部阻抗非常小的信号源输入，问题就显得简单很多。仿真原理图和结果如图所示：<br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/16.png" alt="仿真原理图" title="仿真原理图"><br> <img lazyload src="/images/loading.svg" data-src="/2024/08/21/Sihning-with-emotions/NQ-for-ADDA-systems/17.png" alt="仿真结果" title="仿真结果"><br> &ensp;&ensp;其中绿色信号表示输入信号大小（此处为直流偏置为0，峰峰值为1.1V的正弦波），红蓝分别为两路差分输出，由于Vocm未外部提供，所以两信号的直流偏置为0.828V（3.3V➗4）的内部电阻分压。<br> &ensp;&ensp;对于输入的信号进行带通或者低通也是通信系统不可缺少的环节之一。对于单端输入可以在输入前即对信号进行滤波，也可对 LTC6419 输出的差分对进行滤波，数据手册较为推荐后一种。电源和地，V+ 和 V- 之间均要用 <strong>0.1uF||1000pF</strong> 短路。当LTC6419配置为低差分增益时（如150Ω单位增益），将反馈电容器（CF）与每个反馈电阻器（RF）并联通常是有利的。使用 CF 实现了一个极点-零对（其中零点频率通常小于极点频率），并为放大器周围的反馈环路增益增加了正相位。因此，如果选择得当，添加 CF 可以提高相位裕量并改善反馈回路的稳定性响应。当 RI &#x3D; RF &#x3D; 150Ω 时，建议大多数一般应用在每个 RF 上使用 CF &#x3D; 1.3pF。SHDN 引脚当这些引脚连接到 V– 时，相应的放大器被禁用并仅仅流过 100μA 的电源电流，降低系统功耗。</li>
 </ul>
 </li>
 </ol>
@@ -520,7 +531,7 @@
         
             <li>
                 <strong>Updated at
-                    :</strong> 2024-09-02 09:49:14
+                    :</strong> 2024-09-12 22:49:00
             </li>
         
         <li>
@@ -548,6 +559,21 @@
 
         
             <div class="article-nav my-8 flex justify-between items-center px-2 sm:px-6 md:px-8">
+                
+                    <div class="article-prev border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
+                        <a class="prev"
+                        rel="prev"
+                        href="/2024/09/12/A-Platform-Based-on-XCZU27DR-RFSoC/"
+                        >
+                            <span class="left arrow-icon flex justify-center items-center">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </span>
+                            <span class="title flex justify-center items-center">
+                                <span class="post-nav-title-item">A Platform Based on XCZU27DR RFSoC</span>
+                                <span class="post-nav-item">Prev posts</span>
+                            </span>
+                        </a>
+                    </div>
                 
                 
                     <div class="article-next border-border-color shadow-redefine-flat shadow-shadow-color-2 rounded-medium px-4 py-2 hover:shadow-redefine-flat-hover hover:shadow-shadow-color-2">
@@ -654,7 +680,7 @@
                 
                 <p class="post-count space-x-0.5">
                     <span>
-                        2 posts in total
+                        3 posts in total
                     </span>
                     
                 </p>
